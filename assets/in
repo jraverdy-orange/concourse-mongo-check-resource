@@ -1,0 +1,46 @@
+#!/usr/bin/env perl
+
+use FindBin '$Bin';
+use lib "$Bin";
+use Common;
+
+my $outdir = shift || die "Destination directory must be specified\n";
+
+chdir $outdir;
+
+my $mongodb_version=Common::get_last_version;
+
+# defintion of the items to download.
+# each item is defined by an array [name,local archive,uri]
+my @items=(	["mongo-rocks",
+			 "mongo-rocks-${mongodb_version}.tar.gz",
+			 "https://codeload.github.com/mongodb-partners/mongo-rocks/tar.gz/r${mongodb_version}"
+			],
+			["mongodb",
+			 "mongodb-src-r${mongodb_version}.tar.gz",
+			 "https://fastdl.mongodb.org/src/mongodb-src-r${mongodb_version}.tar.gz"
+			],
+			["mongo-tools",
+			 "mongo-tools-${mongodb_version}.tar.gz",
+			 "https://codeload.github.com/mongodb/mongo-tools/tar.gz/r${mongodb_version}"
+			]);
+
+my @metadata=();
+
+for my $item (@items)
+{
+	my $name=@$item[0];
+	my $file=@$item[1];
+	my $url=@$item[2];
+	my $curl=`curl -o $file -L $url`;
+	tie my %hash, 'Tie::IxHash';
+	$hash{'module'} = "$name";
+	$hash{'uri'} = "$url";
+	push @metadata, {%hash};
+}	
+
+chdir $Bin;
+tie my %output, 'Tie::IxHash';
+%output=('version'=> JSON->new->decode(Common::get_version_json($mongodb_version)),'metadata'=>[@metadata]);
+print STDOUT JSON->new->pretty->encode(\%output);
+exit 0;
