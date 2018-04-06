@@ -33,14 +33,14 @@ for my $item (@items)
 	my $file=@$item[1];
 	my $url=@$item[2];
 	my $curl=`curl -o $file -L $url`;
-	tie my %hash, 'Tie::IxHash';
-	$hash{'module'} = "$name";
-	$hash{'uri'} = "$url";
+	my %hash;
+	$hash{'name'} = "$name uri";
+	$hash{'value'} = "$url";
 	push @metadata, {%hash};
 }	
 
 chdir $Bin;
-tie my %output, 'Tie::IxHash';
-%output=('version'=> JSON->new->decode(Common::get_version_json($mongodb_version)),'metadata'=>[@metadata]);
-print STDOUT JSON->new->pretty->encode(\%output);
+
+my %output=('version'=> JSON->new->decode(Common::get_version_json($mongodb_version)),'metadata'=>[@metadata]);
+print JSON->new->pretty->encode(\%output);
 exit 0;

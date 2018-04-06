@@ -1,5 +1,3 @@
 FROM alpine:edge
-RUN apk add --update sed; \
-    sed -e "/\/main$/!d" -e 's/\/main$/\/testing/' /etc/apk/repositories >> /etc/apk/repositories; \
-    apk add --update perl perl-canary-stability perl-json perl-tie-ixhash curl
+RUN  apk add --update perl perl-canary-stability perl-json curl
 COPY /assets /opt/resource
