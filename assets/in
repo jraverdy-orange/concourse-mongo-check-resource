@@ -49,8 +49,18 @@ my $tar=`tar czf mongodb-python-deps-${mongodb_version}.tar.gz mongodb-python-de
 rmtree "mongodb-python-deps-${mongodb_version}";                                                            
 rmtree "mongodb-src-r${mongodb_version}"; 
 
+my %output=('version'=> JSON->new->decode(Common::get_version_json($mongodb_version)),'metadata'=>[@metadata]);
+
+# putting metadatas into a file for future purposes
+
+open(my $fh, ">:encoding(UTF-8)", 'metadata')
+	    || die "Can't open UTF-8 encoded file metadata: $!\n";
+
+print $fh JSON->new->pretty->encode(\%output);
+ 
+close $fh;
+
 chdir $Bin;
 
-my %output=('version'=> JSON->new->decode(Common::get_version_json($mongodb_version)),'metadata'=>[@metadata]);
 print JSON->new->pretty->encode(\%output);
 exit 0;
