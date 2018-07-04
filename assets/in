@@ -3,6 +3,7 @@
 use FindBin '$Bin';
 use lib "$Bin";
 use Common;
+use File::Path 'rmtree';
 
 my $outdir = shift || die "Destination directory must be specified\n";
 
@@ -37,7 +38,16 @@ for my $item (@items)
 	$hash{'name'} = "$name uri";
 	$hash{'value'} = "$url";
 	push @metadata, {%hash};
-}	
+}
+# processing python dependencies                                                                              
+mkdir "mongodb-python-deps-${mongodb_version}";                                                               
+my $src=`tar xzf mongodb-src-r${mongodb_version}.tar.gz`;                                                     
+chdir "$outdir/mongodb-python-deps-${mongodb_version}";                                                       
+my $pip=`python -mpip download -r $outdir\/mongodb-src-r${mongodb_version}\/buildscripts\/requirements.txt`;
+chdir $outdir;                                                                                              
+my $tar=`tar czf mongodb-python-deps-${mongodb_version}.tar.gz mongodb-python-deps-${mongodb_version}`;     
+rmtree "mongodb-python-deps-${mongodb_version}";                                                            
+rmtree "mongodb-src-r${mongodb_version}"; 
 
 chdir $Bin;
 
