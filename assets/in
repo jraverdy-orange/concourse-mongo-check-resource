@@ -42,8 +42,15 @@ for my $item (@items)
 # processing python dependencies                                                                              
 mkdir "mongodb-python-deps-${mongodb_version}";                                                               
 my $src=`tar xzf mongodb-src-r${mongodb_version}.tar.gz`;                                                     
-chdir "$outdir/mongodb-python-deps-${mongodb_version}";                                                       
-my $pip=`python -mpip download -r $outdir\/mongodb-src-r${mongodb_version}\/buildscripts\/requirements.txt`;
+chdir "$outdir/mongodb-python-deps-${mongodb_version}";
+
+my $update_pip=`pip install --upgrade pip`;
+
+if (-f "${outdir}/mongodb-src-r${mongodb_version}/buildscripts/requirements.txt")
+{   
+
+	my $pip=`python -mpip download -r $outdir\/mongodb-src-r${mongodb_version}\/buildscripts\/requirements.txt`;
+}
 chdir $outdir;                                                                                              
 my $tar=`tar czf mongodb-python-deps-${mongodb_version}.tar.gz mongodb-python-deps-${mongodb_version}`;     
 rmtree "mongodb-python-deps-${mongodb_version}";                                                            
